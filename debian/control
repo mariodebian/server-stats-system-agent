@@ -1,0 +1,16 @@
+Source: server-stats-system-agent
+Section: system
+Priority: optional
+Maintainer: Mario Izquierdo (mariodebian) <mariodebian@gmail.com>
+Build-Depends: debhelper (>= 7),
+               python-all, 
+#               dh-python
+Standards-Version: 3.9.5
+Homepage: https://github.com/mariodebian/server-stats-system-agent
+Vcs-Git: https://github.com/mariodebian/server-stats-system-agent.git
+Vcs-Browser: https://github.com/mariodebian/server-stats-system-agent
+
+Package: server-stats-system-agent
+Architecture: all
+Depends: python-psutil, ${shlibs:Depends}, ${misc:Depends}
+Description: Server data collector to statsd daemon
