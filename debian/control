@@ -12,5 +12,6 @@ Vcs-Browser: https://github.com/mariodebian/server-stats-system-agent
 
 Package: server-stats-system-agent
 Architecture: all
-Depends: python-psutil, ${shlibs:Depends}, ${misc:Depends}
+Depends: python-psutil,
+         ${shlibs:Depends}, ${misc:Depends}
 Description: Server data collector to statsd daemon

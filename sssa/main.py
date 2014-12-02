@@ -77,18 +77,21 @@ class ServerStatsSystemAgent():
         # logger.debug("metrics=%s" % self.metrics.keys())
 
     def run(self):
-        # starts helpers
+        # starts helpers threads
         for m in self.metrics:
             a = self.metrics[m](self.client, self.queue)
+            a.cfg = self.cfg
+            if not a.running:
+                continue
             logger.debug(a)
             a.start()
         #
         while True:
-            # end = time.time() + self.cfg.getint('main', 'period')
-            end = time.time() + 5
+            end = time.time() + self.cfg.getint('main', 'period')
+            # end = time.time() + 5
             # logger.debug("Debug message")
             # trigger all helpers
-            self.queue.put('foo')
+            self.queue.put('main.event')
 
             while time.time() < end:
                 # logger.debug("wait")

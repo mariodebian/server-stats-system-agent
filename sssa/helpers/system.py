@@ -4,24 +4,32 @@ import threading
 import logging
 import time
 
-from sssa.utils import ServerStatsSystemAgentHelper as __ServerStatsSystemAgentHelper
+import sssa.utils
 
 logger = logging.getLogger("helpers.system")
 
 
-class SystemHelper(__ServerStatsSystemAgentHelper):
+class SystemHelper(sssa.utils.ServerStatsSystemAgentHelper):
     _net1 = None
     _net_time = None
+    _parts = []
+    _name = 'system'
 
     def postinit(self):
         self._net1 = psutil.net_io_counters(pernic=True)
         self._net_time = time.time()
+        self._parts = [x.mountpoint for x in psutil.disk_partitions()]
+        return True
 
-    def pre(self):
-        self.disk()
-        self.cpu_times_percent()
-        self.memory()
-        self.network()
+    def loop(self):
+        if not 'system.disk' in self.disabled:
+            self.disk()
+        if not 'system.cpu' in self.disabled:
+            self.cpu_times_percent()
+        if not 'system.mem' in self.disabled:
+            self.memory()
+        if not 'system.net' in self.disabled:
+            self.network()
 
     def network(self):
         if self._net1:
@@ -54,17 +62,19 @@ class SystemHelper(__ServerStatsSystemAgentHelper):
         # self.s.gauge('hdd.root.free', disk_usage.free)
         self.s.gauge('hdd.root.percent', disk_usage.percent)
 
-        disk_usage = psutil.disk_usage('/var')
-        # self.s.gauge('hdd.var.total', disk_usage.total)
-        # self.s.gauge('hdd.var.used', disk_usage.used)
-        # self.s.gauge('hdd.var.free', disk_usage.free)
-        self.s.gauge('hdd.var.percent', disk_usage.percent)
+        if '/var' in self._parts:
+            disk_usage = psutil.disk_usage('/var')
+            # self.s.gauge('hdd.var.total', disk_usage.total)
+            # self.s.gauge('hdd.var.used', disk_usage.used)
+            # self.s.gauge('hdd.var.free', disk_usage.free)
+            self.s.gauge('hdd.var.percent', disk_usage.percent)
 
-        disk_usage = psutil.disk_usage('/home')
-        # self.s.gauge('hdd.home.total', disk_usage.total)
-        # self.s.gauge('hdd.home.used', disk_usage.used)
-        # self.s.gauge('hdd.home.free', disk_usage.free)
-        self.s.gauge('hdd.home.percent', disk_usage.percent)
+        if '/home' in self._parts:
+            disk_usage = psutil.disk_usage('/home')
+            # self.s.gauge('hdd.home.total', disk_usage.total)
+            # self.s.gauge('hdd.home.used', disk_usage.used)
+            # self.s.gauge('hdd.home.free', disk_usage.free)
+            self.s.gauge('hdd.home.percent', disk_usage.percent)
 
     # def cpu_times(c):
     #     cpu_times = psutil.cpu_times()
