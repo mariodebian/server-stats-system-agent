@@ -25,7 +25,7 @@ class ServerStatsSystemAgentHelper(threading.Thread):
 
     def run(self):
         #
-        self.disabled = self.getConfig('disabled').split(',')
+        self.disabled = self.getConfig('disabled', 'main', '').split(',')
         # check if all helper is disabled
         if self._name in self.disabled:
             logger.debug("%s is disabled" % self._name)

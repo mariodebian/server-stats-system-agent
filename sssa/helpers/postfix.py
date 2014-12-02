@@ -34,7 +34,7 @@ class PostfixHelper(sssa.utils.ServerStatsSystemAgentHelper):
                 elif (linebits['status'] == 'bounced'):
                     self.numBounced += 1
 
-        except Exception as e:
+        except Exception, e:
             raise logger.error("regmatch or contents failed with %s" % e)
 
     def get_state(self, duration=30):
