@@ -1,3 +1,9 @@
+server-stats-system-agent (0.2) squeeze; urgency=medium
+
+  * Add postfix metrics and disabled config
+
+ -- Mario Izquierdo (mariodebian) <mariodebian@gmail.com>  Tue, 02 Dec 2014 19:27:44 +0100
+
 server-stats-system-agent (0.1) squeeze; urgency=low
 
   * Initial release

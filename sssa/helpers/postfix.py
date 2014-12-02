@@ -10,7 +10,7 @@ import pprint
 import sssa.utils
 
 
-MAIL_LOG = './mail.info'
+MAIL_LOG = '/var/log/mail.info'
 LOG_OFFSET = '/var/run/sssa-postfix.offset'
 
 
