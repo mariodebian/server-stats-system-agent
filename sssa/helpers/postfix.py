@@ -5,19 +5,20 @@ import logging
 import Queue
 import re
 import time
-import pprint
 
 import sssa.utils
 
 
 MAIL_LOG = '/var/log/mail.info'
 LOG_OFFSET = '/var/run/sssa-postfix.offset'
-
-
 logger = logging.getLogger("helpers.postfix")
 
 
 class PostfixHelper(sssa.utils.ServerStatsSystemAgentHelper):
+    _name = 'postfix'
+
+    # based on logster
+    # https://github.com/etsy/logster/blob/master/logster/parsers/PostfixLogster.py
     def parse_line(self, line):
         try:
             # Apply regular expression to each line and extract interesting bits.
@@ -111,19 +112,19 @@ class PostfixHelper(sssa.utils.ServerStatsSystemAgentHelper):
         # logger.debug('postfix read Queue done')
 
         if self.first:
-            # logger.debug(pprint.pformat(data))
             logger.debug('postfix discard first data')
             self.first = False
             return
 
-        # logger.debug('postfix no first')
+        # send data as simple counter
         self.s.update_stats("postfix.num_sent", data['num_sent'])
         self.s.update_stats("postfix.num_deferred", data['num_deferred'])
         self.s.update_stats("postfix.num_bounced", data['num_bounced'])
-
+        #
+        # send data as gauge
         self.s.gauge("postfix.percent_sent", data['percent_sent'])
         self.s.gauge("postfix.percent_deferred", data['percent_deferred'])
         self.s.gauge("postfix.percent_bounced", data['percent_bounced'])
-
+        #
         self.s.gauge("postfix.mail_tx_sec", data['mail_tx_sec'])
         self.s.gauge("postfix.mail_sent_sec", data['mail_sent_sec'])
