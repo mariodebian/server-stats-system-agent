@@ -5,6 +5,7 @@ import logging
 import Queue
 import re
 import time
+import commands
 
 import sssa.utils
 
@@ -60,6 +61,12 @@ class PostfixHelper(sssa.utils.ServerStatsSystemAgentHelper):
             mailTxnsSec = totalTxns / self.duration
             mailSentSec = self.numSent / self.duration
 
+        queue_size = 0
+        # -- XXXX Kbytes in X Requests.
+        num = commands.getoutput("mailq 2>&1 | tail -1 | awk '{print $5}'")
+        if num != '':
+            queue_size = int(num)
+
         # Return a list of metrics objects
         return {"num_sent": self.numSent,
                 "percent_sent": pctSent,
@@ -71,6 +78,7 @@ class PostfixHelper(sssa.utils.ServerStatsSystemAgentHelper):
                 "mail_sent_sec": mailSentSec,
                 # "avg_delay": avgDelay,
                 "duration": duration,
+                "queue_size": queue_size,
                 }
 
     def resetCounters(self):
@@ -101,7 +109,8 @@ class PostfixHelper(sssa.utils.ServerStatsSystemAgentHelper):
         logger.debug(line)
 
     def loop(self):
-        # logger.debug('postfix')
+        if sssa.DEBUG:
+            logger.debug('postfix')
         while not self.lines.empty():
             line = self.lines.get()
             self.parse_line(line)
@@ -116,6 +125,9 @@ class PostfixHelper(sssa.utils.ServerStatsSystemAgentHelper):
             self.first = False
             return
 
+        if sssa.DEBUG:
+            logger.debug(data)
+
         # send data as simple counter
         self.s.update_stats("postfix.num_sent", data['num_sent'])
         self.s.update_stats("postfix.num_deferred", data['num_deferred'])
@@ -128,3 +140,5 @@ class PostfixHelper(sssa.utils.ServerStatsSystemAgentHelper):
         #
         self.s.gauge("postfix.mail_tx_sec", data['mail_tx_sec'])
         self.s.gauge("postfix.mail_sent_sec", data['mail_sent_sec'])
+        #
+        self.s.gauge("postfix.queue_size", data['queue_size'])

@@ -7,6 +7,8 @@ import random
 import time
 import logging
 
+import sssa
+
 
 class Client(object):
     def __init__(self, host='localhost', port=8125, prefix=None):
@@ -98,6 +100,9 @@ class Client(object):
                                 for stat, value in data.items())
         else:
             sampled_data = data
+
+        if sssa.DEBUG:
+            [self.log.debug("%s:%s" % (stat, value)) for stat, value in sampled_data.items()]
 
         try:
             [self.udp_sock.sendto(bytes(bytearray("%s:%s" % (stat, value),

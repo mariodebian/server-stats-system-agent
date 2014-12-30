@@ -35,6 +35,8 @@ class ServerStatsSystemAgentHelper(threading.Thread):
             try:
                 self.q.get(True, 10)
                 self.loop()
+            except Queue.Empty:
+                self.loop()
             except:
                 pass
 

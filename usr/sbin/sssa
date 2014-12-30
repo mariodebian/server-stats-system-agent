@@ -24,6 +24,7 @@ if __name__ == '__main__':
         ch.setFormatter(formatter)
         logger.addHandler(ch)
         logger.setLevel(logging.DEBUG)
+        sssa.DEBUG = True
     else:
         import logging.handlers
         handler = logging.handlers.RotatingFileHandler(sssa.SSSA_LOG,

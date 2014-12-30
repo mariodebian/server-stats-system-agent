@@ -11,3 +11,4 @@ CONFIG_DEFAUTLS = {'host': 'localhost',
                    'hostname': '____',
                    'period': '30',
                    'fake': 'true'}
+DEBUG = False
